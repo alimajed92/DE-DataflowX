@@ -1,0 +1,42 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+env/
+venv/
+ENV/
+.venv/
+env.bak/
+venv.bak/
+
+# Environment variables (contains secrets, API keys, etc.)
+.env
+
+# Editor and IDE specific files
+.vscode/
+.idea/
+
+# Jupyter Notebook checkpoints (if you use notebooks)
+.ipynb_checkpoints/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Temporary files created by the application (e.g., uploaded files, logs)
+uploads/
+logs/
+temp/
+
+# Other files to ignore (customize as needed)
+*.log
