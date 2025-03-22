@@ -12,6 +12,7 @@ class Config:
     """Application Configuration Class"""
 
     BASE_DIR = Path(__file__).resolve().parent
+    KAFKA_BROKER = os.getenv("KAFKA_BROKER", "127.0.0.1:9092")
     MQTT_BROKER_HOST = os.getenv("MQTT_BROKER_HOST", "127.0.0.1")
     MQTT_BROKER_PORT = os.getenv("MQTT_BROKER_PORT", 1883)
     DATA_FOLDER = BASE_DIR / "Data"
@@ -29,6 +30,11 @@ class Config:
             if cls.MQTT_BROKER_PORT is None:
                 raise dataFlow_Exception(
                     "MQTT_BROKER_PORT is not set in environment variables"
+                )
+
+            if cls.KAFKA_BROKER is None:
+                raise dataFlow_Exception(
+                    "KAFKA_BROKER is not set in environment variables"
                 )
 
             if cls.DATA_FOLDER is None:
@@ -56,6 +62,9 @@ class Config:
         )
         dataFlow_logger.info(
             f"{YELLOW}MQTT_BROKER_PORT:{RESET} {BLUE}{cls.MQTT_BROKER_PORT}{RESET}"
+        )
+        dataFlow_logger.info(
+            f"{YELLOW}KAFKA_BROKER:{RESET} {BLUE}{cls.KAFKA_BROKER}{RESET}"
         )
 
 

@@ -6,23 +6,26 @@ from logger.logger import dataFlow_logger
 from exceptions.exceptions import dataFlow_Exception
 import time
 from config import Config
+import config as cfg
 import json
 import pandas as pd
+
+
+kafka_broker = Config.KAFKA_BROKER
 
 
 # === MQTT Callback ===
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        print("✅ MQTT connected successfully.")
+        dataFlow_logger.info("MQTT connected successfully.")
         client.subscribe("#")
     else:
-        print(f"❌ MQTT connection failed. Return code {rc}")
+        dataFlow_logger.error(f"MQTT connection failed. Return code {rc}")
 
 
 def on_message(client, userdata, msg):
-    print(f"📩 MQTT message received on topic '{msg.topic}': {msg.payload.decode()}")
+    print(f"MQTT message received on topic '{msg.topic}': {msg.payload.decode()}")
 
-    kafka_broker = "127.0.0.1:9092"
     kafka_topic = "Data-test"
 
     try:
@@ -35,10 +38,10 @@ def on_message(client, userdata, msg):
         # Forward the MQTT message payload to Kafka
         producer.send(kafka_topic, msg.payload.decode())
         producer.flush()
-        print(f"✅ Message forwarded to Kafka topic '{kafka_topic}'")
+        dataFlow_logger.debug(f"Message forwarded to Kafka topic '{kafka_topic}'")
 
     except Exception as e:
-        print(f"❌ Error sending to Kafka: {e}")
+        print(f"Error sending to Kafka: {e}")
 
 
 # === MQTT Connection ===
@@ -50,7 +53,7 @@ def connect_to_mqtt(broker_host: str, broker_port: int = 1883) -> mqtt.Client:
     try:
         mqtt_client.connect(broker_host, int(broker_port), 60)
     except Exception as e:
-        print(f"❌ Failed to connect to MQTT broker: {e}")
+        dataFlow_logger.error(f"Failed to connect to MQTT broker: {e}")
         raise
 
     return mqtt_client
@@ -66,9 +69,9 @@ def sending_to_mqtt(mqtt_client: mqtt.Client, df: pd.DataFrame, topic: str) -> N
     for _, row in df.iterrows():
         payload = json.dumps(row.to_dict())
         mqtt_client.publish(topic, payload)
-        print(f"📤 Published to MQTT topic '{topic}': {payload}")
+        dataFlow_logger.info(f"Published to MQTT topic '{topic}': {payload}")
         time.sleep(1)
 
     mqtt_client.loop_stop()
     mqtt_client.disconnect()
-    print("🔌 Disconnected from MQTT broker.")
+    dataFlow_logger.info("Disconnected from MQTT broker.")
